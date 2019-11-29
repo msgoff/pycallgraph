@@ -41,7 +41,6 @@ class RegExp(object):
             if not a:
                 return
 
-
     def precompiled(self):
         reo = re.compile(self.expression)
         for word in self.words():

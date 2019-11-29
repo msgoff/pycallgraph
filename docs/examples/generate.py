@@ -56,7 +56,6 @@ for info in yaml.load(open('examples.yml')):
         IMAGE_TEMPLATE.format(info).strip()
     )
 
-
     print(info['run'])
 
     # If the hash of the example hasn't changed, don't run again
@@ -75,4 +74,3 @@ open('index.rst', 'w').write(INDEX_TEMPLATE.format('\n   '.join(index)))
 
 out = yaml.dump(new_yaml, default_flow_style=False)
 open('examples.yml', 'w').write(out)
-

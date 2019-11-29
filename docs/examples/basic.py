@@ -1,1 +1,1 @@
-../../examples/graphviz/basic.py
+.. / .. / examples / graphviz / basic.py

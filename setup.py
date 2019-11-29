@@ -11,12 +11,13 @@ import pycallgraph
 # Only install the man page if the correct directory exists
 # XXX: Commented because easy_install doesn't like it
 #man_path = '/usr/share/man/man1/'
-#if path.exists(man_path):
+# if path.exists(man_path):
 #    data_files=[['/usr/share/man/man1/', ['man/pycallgraph.1']]]
-#else:
+# else:
 #    data_files=None
 
-data_files=None
+data_files = None
+
 
 class PyTest(TestCommand):
 
@@ -29,6 +30,7 @@ class PyTest(TestCommand):
         import pytest
         errno = pytest.main(self.test_args)
         sys.exit(errno)
+
 
 setup(
     name='pycallgraph',
@@ -45,15 +47,14 @@ setup(
     use_2to3=True,
 
     # TODO: Update download_url
-    download_url =
-    'http://pycallgraph.slowchop.com/files/download/pycallgraph-%s.tar.gz' % \
-        pycallgraph.__version__,
+    download_url='http://pycallgraph.slowchop.com/files/download/pycallgraph-%s.tar.gz' % \
+    pycallgraph.__version__,
 
     # Testing
     tests_require=['pytest'],
-    cmdclass = {'test': PyTest},
+    cmdclass={'test': PyTest},
 
-    classifiers = [
+    classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License (GPL)',
@@ -68,4 +69,3 @@ setup(
         'Topic :: Software Development :: Debuggers',
     ],
 )
-

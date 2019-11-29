@@ -97,7 +97,7 @@ class Output(object):
             'The command "{0}" is required to be in your path.'.format(cmd))
 
     def normalize_path(self, path):
-        regex_user_expand = re.compile('\A~')
+        regex_user_expand = re.compile(r'\A~')
         if regex_user_expand.match(path):
             path = os.path.expanduser(path)
         else:

@@ -52,7 +52,7 @@ def group_some():
 def group_methods():
     trace_grouper = Grouper(groups=[
         'example_with_submodules.*.report',
-        ])
+    ])
 
     run(
         'methods',
