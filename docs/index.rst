@@ -36,7 +36,7 @@ The documentation needs some work stiil. Feel free to contribute :)
 Features
 ========
 
-* Support for Python 2.7+ and Python 3.3+.
+* Support for Python 3.3+.
 * Static visualizations of the call graph using various tools such as Graphviz and Gephi.
 * Execute pycallgraph from the command line or import it in your code.
 * Customisable colors. You can programatically set the colors based on number of calls, time taken, memory usage, etc.
