@@ -15,7 +15,7 @@ def test_simple(gephi):
     generated = open(gephi.output_file).read()
     os.unlink(gephi.output_file)
 
-    assert 'nodedef> name VARCHAR' in generated
-    assert 'edgedef> node1 VARCHAR, node2 VARCHAR' in generated
-    assert 'calls.one_nop,calls.one_nop,calls,1' in generated
-    assert 'calls.one_nop,calls.nop,1' in generated
+    assert "nodedef> name VARCHAR" in generated
+    assert "edgedef> node1 VARCHAR, node2 VARCHAR" in generated
+    assert "calls.one_nop,calls.one_nop,calls,1" in generated
+    assert "calls.one_nop,calls.nop,1" in generated

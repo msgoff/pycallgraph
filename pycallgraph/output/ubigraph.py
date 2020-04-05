@@ -9,10 +9,9 @@ from .output import Output
 
 
 class UbigraphOutput(Output):
-
     def __init__(self, **kwargs):
         self.fp = None
-        self.server_url = 'http://127.0.0.1:20738/RPC2'
+        self.server_url = "http://127.0.0.1:20738/RPC2"
         Output.__init__(self, **kwargs)
 
     def start(self):
@@ -38,14 +37,18 @@ class UbigraphOutput(Output):
         defaults = cls()
 
         subparser = subparsers.add_parser(
-            'ubigraph',
-            help='Update an Ubigraph visualization in real time',
-            parents=[parent_parser], usage=usage,
+            "ubigraph",
+            help="Update an Ubigraph visualization in real time",
+            parents=[parent_parser],
+            usage=usage,
         )
 
         subparser.add_argument(
-            '-s', '--server-url', type=str, default=defaults.server_url,
-            help='The Ubigraph server',
+            "-s",
+            "--server-url",
+            type=str,
+            default=defaults.server_url,
+            help="The Ubigraph server",
         )
 
         return subparser

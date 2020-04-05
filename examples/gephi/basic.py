@@ -1,19 +1,17 @@
 #!/usr/bin/env python
-'''
+"""
 This example demonstrates a simple use of pycallgraph.
-'''
+"""
 from pycallgraph import PyCallGraph
 from pycallgraph.output import GephiOutput
 
 
 class Banana:
-
     def eat(self):
         pass
 
 
 class Person:
-
     def __init__(self):
         self.no_bananas()
 
@@ -30,7 +28,7 @@ class Person:
 
 def main():
     gephi = GephiOutput()
-    gephi.output_file = 'basic.gdf'
+    gephi.output_file = "basic.gdf"
 
     with PyCallGraph(output=gephi):
         person = Person()
@@ -39,5 +37,5 @@ def main():
         person.eat_bananas()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

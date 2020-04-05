@@ -7,8 +7,10 @@ from .ubigraph import UbigraphOutput
 from .pickle import PickleOutput
 
 
-outputters = collections.OrderedDict([
-    ('graphviz', GraphvizOutput),
-    ('gephi', GephiOutput),
-    # ('ubigraph', UbigraphOutput),
-])
+outputters = collections.OrderedDict(
+    [
+        ("graphviz", GraphvizOutput),
+        ("gephi", GephiOutput),
+        # ('ubigraph', UbigraphOutput),
+    ]
+)

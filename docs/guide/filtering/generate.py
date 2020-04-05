@@ -5,7 +5,7 @@ import subprocess
 import yaml
 
 
-items = yaml.load(open('examples.yml'))
+items = yaml.load(open("examples.yml"))
 
 print(items)
 
@@ -17,7 +17,7 @@ for script, save_md5 in items.items():
         continue
     changed = True
     items[script] = new_md5
-    subprocess.call('./{}'.format(script), shell=True)
+    subprocess.call("./{}".format(script), shell=True)
 
 if changed:
-    open('examples.yml', 'w').write(yaml.dump(items))
+    open("examples.yml", "w").write(yaml.dump(items))

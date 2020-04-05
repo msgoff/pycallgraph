@@ -2,7 +2,6 @@ import time
 
 
 class Banana:
-
     def __init__(self):
         pass
 

@@ -1,6 +1,6 @@
 """Profile the memory usage of a Python program"""
 
-__version__ = '0.25'
+__version__ = "0.25"
 
 import pdb
 import os
@@ -10,6 +10,7 @@ import subprocess
 import inspect
 import linecache
 import warnings
+
 _CMD_USAGE = "python -m memory_profiler script_file.py"
 
 
@@ -36,23 +37,29 @@ except ImportError:
 
     warnings.warn("psutil module not found. memory_profiler will be slow")
 
-    if os.name == 'posix':
+    if os.name == "posix":
+
         def _get_memory(pid):
             # ..
             # .. memory usage in MB ..
             # .. this should work on both Mac and Linux ..
             # .. subprocess.check_output appeared in 2.7, using Popen ..
             # .. for backwards compatibility ..
-            out = subprocess.Popen(['ps', 'v', '-p', str(pid)],
-                                   stdout=subprocess.PIPE).communicate()[0].split(b'\n')
+            out = (
+                subprocess.Popen(["ps", "v", "-p", str(pid)], stdout=subprocess.PIPE)
+                .communicate()[0]
+                .split(b"\n")
+            )
             try:
-                vsz_index = out[0].split().index(b'RSS')
+                vsz_index = out[0].split().index(b"RSS")
                 return float(out[1].split()[vsz_index]) / 1024
             except BaseException:
                 return -1
+
     else:
-        raise NotImplementedError('The psutil module is required for non-unix '
-                                  'platforms')
+        raise NotImplementedError(
+            "The psutil module is required for non-unix " "platforms"
+        )
 
 
 class Timer(Process):
@@ -111,9 +118,9 @@ def memory_usage(proc=-1, interval=0.0, timeout=None):
         max_iter = 1
     else:
         # for a Python function wait until it finishes
-        max_iter = float('inf')
+        max_iter = float("inf")
 
-    if hasattr(proc, '__call__'):
+    if hasattr(proc, "__call__"):
         proc = (proc, (), {})
     if isinstance(proc, (list, tuple)):
         if len(proc) == 1:
@@ -131,8 +138,8 @@ def memory_usage(proc=-1, interval=0.0, timeout=None):
             n_args -= len(aspec.defaults)
         if n_args != len(args):
             raise ValueError(
-                'Function expects %s value(s) but %s where given'
-                % (n_args, len(args)))
+                "Function expects %s value(s) but %s where given" % (n_args, len(args))
+            )
 
         child_conn, parent_conn = Pipe()  # this will store Timer's results
         p = Timer(os.getpid(), interval, child_conn)
@@ -166,6 +173,7 @@ def memory_usage(proc=-1, interval=0.0, timeout=None):
             time.sleep(interval)
     return ret
 
+
 # ..
 # .. utility functions for line-by-line ..
 
@@ -177,15 +185,15 @@ def _find_script(script_name):
     """
     if os.path.isfile(script_name):
         return script_name
-    path = os.getenv('PATH', os.defpath).split(os.pathsep)
+    path = os.getenv("PATH", os.defpath).split(os.pathsep)
     for folder in path:
-        if folder == '':
+        if folder == "":
             continue
         fn = os.path.join(folder, script_name)
         if os.path.isfile(fn):
             return fn
 
-    sys.stderr.write('Could not find script {0}\n'.format(script_name))
+    sys.stderr.write("Could not find script {0}\n".format(script_name))
     raise SystemExit(1)
 
 
@@ -196,7 +204,7 @@ class LineProfiler:
         self.functions = list()
         self.code_map = {}
         self.enable_count = 0
-        self.max_mem = kw.get('max_mem', None)
+        self.max_mem = kw.get("max_mem", None)
 
     def __call__(self, func):
         self.add_function(func)
@@ -204,7 +212,7 @@ class LineProfiler:
         f.__module__ = func.__module__
         f.__name__ = func.__name__
         f.__doc__ = func.__doc__
-        f.__dict__.update(getattr(func, '__dict__', {}))
+        f.__dict__.update(getattr(func, "__dict__", {}))
         return f
 
     def add_function(self, func):
@@ -215,8 +223,8 @@ class LineProfiler:
             code = func.__code__
         except AttributeError:
             import warnings
-            warnings.warn("Could not extract a code object for the object %r"
-                          % (func,))
+
+            warnings.warn("Could not extract a code object for the object %r" % (func,))
             return
         if code not in self.code_map:
             self.code_map[code] = {}
@@ -233,12 +241,14 @@ class LineProfiler:
             finally:
                 self.disable_by_count()
             return result
+
         return f
 
     def run(self, cmd):
         """ Profile a single executable statment in the main namespace.
         """
         import __main__
+
         main_dict = __main__.__dict__
         return self.runctx(cmd, main_dict, main_dict)
 
@@ -280,9 +290,9 @@ class LineProfiler:
 
     def trace_memory_usage(self, frame, event, arg):
         """Callback for sys.settrace"""
-        if event in ('line', 'return') and frame.f_code in self.code_map:
+        if event in ("line", "return") and frame.f_code in self.code_map:
             lineno = frame.f_lineno
-            if event == 'return':
+            if event == "return":
                 lineno += 1
             entry = self.code_map[frame.f_code].setdefault(lineno, [])
             entry.append(_get_memory(os.getpid()))
@@ -291,13 +301,14 @@ class LineProfiler:
 
     def trace_max_mem(self, frame, event, arg):
         # run into PDB as soon as memory is higher than MAX_MEM
-        if event in ('line', 'return') and frame.f_code in self.code_map:
+        if event in ("line", "return") and frame.f_code in self.code_map:
             c = _get_memory(os.getpid())
             if c >= self.max_mem:
-                t = 'Current memory {0:.2f} MB exceeded the maximum '.format(
-                    c) + 'of {0:.2f} MB\n'.format(self.max_mem)
+                t = "Current memory {0:.2f} MB exceeded the maximum ".format(
+                    c
+                ) + "of {0:.2f} MB\n".format(self.max_mem)
                 sys.stdout.write(t)
-                sys.stdout.write('Stepping into the debugger \n')
+                sys.stdout.write("Stepping into the debugger \n")
                 frame.f_lineno -= 2
                 p = pdb.Pdb()
                 p.quitting = False
@@ -329,7 +340,7 @@ class LineProfiler:
 def show_results(prof, stream=None, precision=3):
     if stream is None:
         stream = sys.stdout
-    template = '{0:>6} {1:>12} {2:>12}   {3:<}'
+    template = "{0:>6} {1:>12} {2:>12}   {3:<}"
 
     for code in prof.code_map:
         lines = prof.code_map[code]
@@ -339,47 +350,47 @@ def show_results(prof, stream=None, precision=3):
         filename = code.co_filename
         if filename.endswith((".pyc", ".pyo")):
             filename = filename[:-1]
-        stream.write('Filename: ' + filename + '\n\n')
+        stream.write("Filename: " + filename + "\n\n")
         if not os.path.exists(filename):
-            stream.write('ERROR: Could not find file ' + filename + '\n')
-            if filename.startswith(
-                    "ipython-input") or filename.startswith("<ipython-input"):
-                print("NOTE: %mprun can only be used on functions defined in "
-                      "physical files, and not in the IPython environment.")
+            stream.write("ERROR: Could not find file " + filename + "\n")
+            if filename.startswith("ipython-input") or filename.startswith(
+                "<ipython-input"
+            ):
+                print(
+                    "NOTE: %mprun can only be used on functions defined in "
+                    "physical files, and not in the IPython environment."
+                )
             continue
         all_lines = linecache.getlines(filename)
-        sub_lines = inspect.getblock(all_lines[code.co_firstlineno - 1:])
-        linenos = range(code.co_firstlineno, code.co_firstlineno +
-                        len(sub_lines))
+        sub_lines = inspect.getblock(all_lines[code.co_firstlineno - 1 :])
+        linenos = range(code.co_firstlineno, code.co_firstlineno + len(sub_lines))
         lines_normalized = {}
 
-        header = template.format('Line #', 'Mem usage', 'Increment',
-                                 'Line Contents')
-        stream.write(header + '\n')
-        stream.write('=' * len(header) + '\n')
+        header = template.format("Line #", "Mem usage", "Increment", "Line Contents")
+        stream.write(header + "\n")
+        stream.write("=" * len(header) + "\n")
         # move everything one frame up
         keys = sorted(lines.keys())
 
         k_old = keys[0] - 1
         lines_normalized[keys[0] - 1] = lines[keys[0]]
         for i in range(1, len(lines_normalized[keys[0] - 1])):
-            lines_normalized[keys[0] - 1][i] = -1.
+            lines_normalized[keys[0] - 1][i] = -1.0
         k = keys.pop(0)
         while keys:
             lines_normalized[k] = lines[keys[0]]
-            for i in range(len(lines_normalized[k_old]),
-                           len(lines_normalized[k])):
-                lines_normalized[k][i] = -1.
+            for i in range(len(lines_normalized[k_old]), len(lines_normalized[k])):
+                lines_normalized[k][i] = -1.0
             k_old = k
             k = keys.pop(0)
 
         first_line = sorted(lines_normalized.keys())[0]
         mem_old = max(lines_normalized[first_line])
         precision = int(precision)
-        template_mem = '{{0:{0}.{1}'.format(precision + 6, precision) + 'f} MB'
+        template_mem = "{{0:{0}.{1}".format(precision + 6, precision) + "f} MB"
         for i, l in enumerate(linenos):
-            mem = ''
-            inc = ''
+            mem = ""
+            inc = ""
             if l in lines_normalized:
                 mem = max(lines_normalized[l])
                 inc = mem - mem_old
@@ -387,11 +398,11 @@ def show_results(prof, stream=None, precision=3):
                 mem = template_mem.format(mem)
                 inc = template_mem.format(inc)
             stream.write(template.format(l, mem, inc, sub_lines[i]))
-        stream.write('\n\n')
+        stream.write("\n\n")
 
 
 # A lprun-style %mprun magic for IPython.
-def magic_mprun(self, parameter_s=''):
+def magic_mprun(self, parameter_s=""):
     """ Execute a statement under the line-by-line memory profiler from the
     memory_profilser module.
 
@@ -428,8 +439,9 @@ def magic_mprun(self, parameter_s=''):
     # Local imports to avoid hard dependency.
     from distutils.version import LooseVersion
     import IPython
+
     ipython_version = LooseVersion(IPython.__version__)
-    if ipython_version < '0.11':
+    if ipython_version < "0.11":
         from IPython.genutils import page
         from IPython.ipstruct import Struct
         from IPython.ipapi import UsageError
@@ -439,9 +451,9 @@ def magic_mprun(self, parameter_s=''):
         from IPython.core.error import UsageError
 
     # Escape quote markers.
-    opts_def = Struct(T=[''], f=[])
-    parameter_s = parameter_s.replace('"', r'\"').replace("'", r"\'")
-    opts, arg_str = self.parse_options(parameter_s, 'rf:T:', list_all=True)
+    opts_def = Struct(T=[""], f=[])
+    parameter_s = parameter_s.replace('"', r"\"").replace("'", r"\'")
+    opts, arg_str = self.parse_options(parameter_s, "rf:T:", list_all=True)
     opts.merge(opts_def)
     global_ns = self.shell.user_global_ns
     local_ns = self.shell.user_ns
@@ -453,8 +465,8 @@ def magic_mprun(self, parameter_s=''):
             funcs.append(eval(name, global_ns, local_ns))
         except Exception as e:
             raise UsageError(
-                'Could not find function %r.\n%s: %s' %
-                (name, e.__class__.__name__, e))
+                "Could not find function %r.\n%s: %s" % (name, e.__class__.__name__, e)
+            )
 
     profile = LineProfiler()
     for func in funcs:
@@ -466,26 +478,27 @@ def magic_mprun(self, parameter_s=''):
     except ImportError:  # Python 3x
         import __builtin__ as builtins
 
-    if 'profile' in builtins.__dict__:
+    if "profile" in builtins.__dict__:
         had_profile = True
-        old_profile = builtins.__dict__['profile']
+        old_profile = builtins.__dict__["profile"]
     else:
         had_profile = False
         old_profile = None
-    builtins.__dict__['profile'] = profile
+    builtins.__dict__["profile"] = profile
 
     try:
         try:
             profile.runctx(arg_str, global_ns, local_ns)
-            message = ''
+            message = ""
         except SystemExit:
             message = "*** SystemExit exception caught in code being profiled."
         except KeyboardInterrupt:
-            message = ("*** KeyboardInterrupt exception caught in code being "
-                       "profiled.")
+            message = (
+                "*** KeyboardInterrupt exception caught in code being " "profiled."
+            )
     finally:
         if had_profile:
-            builtins.__dict__['profile'] = old_profile
+            builtins.__dict__["profile"] = old_profile
 
     # Trap text output.
     stdout_trap = StringIO()
@@ -493,7 +506,7 @@ def magic_mprun(self, parameter_s=''):
     output = stdout_trap.getvalue()
     output = output.rstrip()
 
-    if ipython_version < '0.11':
+    if ipython_version < "0.11":
         page(output, screen_lines=self.shell.rc.screen_length)
     else:
         page(output)
@@ -501,13 +514,12 @@ def magic_mprun(self, parameter_s=''):
 
     text_file = opts.T[0]
     if text_file:
-        with open(text_file, 'w') as pfile:
+        with open(text_file, "w") as pfile:
             pfile.write(output)
-        print('\n*** Profile printout saved to text file %s. %s' % (text_file,
-                                                                    message))
+        print("\n*** Profile printout saved to text file %s. %s" % (text_file, message))
 
     return_value = None
-    if 'r' in opts:
+    if "r" in opts:
         return_value = profile
 
     return return_value
@@ -518,10 +530,11 @@ def _func_exec(stmt, ns):
     # statement
     exec(stmt, ns)
 
+
 # a timeit-style %memit magic for IPython
 
 
-def magic_memit(self, line=''):
+def magic_memit(self, line=""):
     """Measure memory usage of a Python statement
 
     Usage, in line mode:
@@ -557,58 +570,68 @@ def magic_memit(self, line=''):
       maximum of 1: -inf MB per loop
 
     """
-    opts, stmt = self.parse_options(line, 'r:t:i', posix=False, strict=False)
-    repeat = int(getattr(opts, 'r', 1))
+    opts, stmt = self.parse_options(line, "r:t:i", posix=False, strict=False)
+    repeat = int(getattr(opts, "r", 1))
     if repeat < 1:
         repeat == 1
-    timeout = int(getattr(opts, 't', 0))
+    timeout = int(getattr(opts, "t", 0))
     if timeout <= 0:
         timeout = None
 
     mem_usage = []
     for _ in range(repeat):
-        tmp = memory_usage(
-            (_func_exec, (stmt, self.shell.user_ns)), timeout=timeout)
+        tmp = memory_usage((_func_exec, (stmt, self.shell.user_ns)), timeout=timeout)
         mem_usage.extend(tmp)
 
     if mem_usage:
-        print('maximum of %d: %f MB per loop' % (repeat, max(mem_usage)))
+        print("maximum of %d: %f MB per loop" % (repeat, max(mem_usage)))
     else:
-        print('ERROR: could not read memory usage, try with a lower interval or more iterations')
+        print(
+            "ERROR: could not read memory usage, try with a lower interval or more iterations"
+        )
 
 
 def load_ipython_extension(ip):
     """This is called to load the module as an IPython extension."""
-    ip.define_magic('mprun', magic_mprun)
-    ip.define_magic('memit', magic_memit)
+    ip.define_magic("mprun", magic_mprun)
+    ip.define_magic("memit", magic_memit)
 
 
 def profile(func, stream=None):
     """
     Decorator that will run the function and print a line-by-line profile
     """
+
     def wrapper(*args, **kwargs):
         prof = LineProfiler()
         val = prof(func)(*args, **kwargs)
         show_results(prof, stream=stream)
         return val
+
     return wrapper
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from optparse import OptionParser
+
     parser = OptionParser(usage=_CMD_USAGE, version=__version__)
     parser.disable_interspersed_args()
-    parser.add_option("--pdb-mmem", dest="max_mem", metavar="MAXMEM",
-                      type="float", action="store",
-                      help="step into the debugger when memory exceeds MAXMEM")
     parser.add_option(
-        '--precision',
+        "--pdb-mmem",
+        dest="max_mem",
+        metavar="MAXMEM",
+        type="float",
+        action="store",
+        help="step into the debugger when memory exceeds MAXMEM",
+    )
+    parser.add_option(
+        "--precision",
         dest="precision",
         type="int",
         action="store",
         default=3,
-        help="precision of memory output in number of significant digits")
+        help="precision of memory output in number of significant digits",
+    )
 
     if not sys.argv[1:]:
         parser.print_help()
@@ -621,16 +644,17 @@ if __name__ == '__main__':
     try:
         if sys.version_info[0] < 3:
             import __builtin__
-            __builtin__.__dict__['profile'] = prof
+
+            __builtin__.__dict__["profile"] = prof
             ns = locals()
-            ns['profile'] = prof  # shadow the profile decorator defined above
+            ns["profile"] = prof  # shadow the profile decorator defined above
             execfile(__file__, ns, ns)
         else:
             import builtins
-            builtins.__dict__['profile'] = prof
+
+            builtins.__dict__["profile"] = prof
             ns = locals()
-            ns['profile'] = prof  # shadow the profile decorator defined above
-            exec(compile(open(__file__).read(), __file__, 'exec'), ns,
-                 globals())
+            ns["profile"] = prof  # shadow the profile decorator defined above
+            exec(compile(open(__file__).read(), __file__, "exec"), ns, globals())
     finally:
         show_results(prof, precision=options.precision)

@@ -17,8 +17,8 @@ def test_hsv():
 
 
 def test_rgb_csv():
-    assert Color(0.3, 0.4, 0.5, 0.6).rgb_csv() == '76,102,127'
+    assert Color(0.3, 0.4, 0.5, 0.6).rgb_csv() == "76,102,127"
 
 
 def test_str():
-    assert str(Color(0.071, 0.204, 0.338, 0.471)) == '<Color #12345678>'
+    assert str(Color(0.071, 0.204, 0.338, 0.471)) == "<Color #12345678>"
