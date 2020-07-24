@@ -1,7 +1,7 @@
 from fnmatch import fnmatch
 
 
-class Grouper(object):
+class Grouper:
     """Group module names.
 
     By default, objects are grouped by their top-level module name. Additional

@@ -6,7 +6,7 @@ from ..exceptions import PyCallGraphException
 from ..color import Color
 
 
-class Output(object):
+class Output:
     """Base class for all outputters."""
 
     def __init__(self, **kwargs):

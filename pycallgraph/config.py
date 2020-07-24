@@ -6,7 +6,7 @@ from .globbing_filter import GlobbingFilter
 from .grouper import Grouper
 
 
-class Config(object):
+class Config:
     """Handles configuration settings for pycallgraph, tracer, and each output
     module.  It also handles command line arguments.
     """

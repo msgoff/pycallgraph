@@ -1,4 +1,4 @@
-class Util(object):
+class Util:
     @staticmethod
     def human_readable_bibyte(num):
         num = float(num)

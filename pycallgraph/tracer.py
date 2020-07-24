@@ -16,7 +16,7 @@ except ImportError:
 from .util import Util
 
 
-class SyncronousTracer(object):
+class SyncronousTracer:
     def __init__(self, outputs, config):
         self.processor = TraceProcessor(outputs, config)
         self.config = config
@@ -326,7 +326,7 @@ class TraceProcessor(Thread):
                 yield edge
 
 
-class Stat(object):
+class Stat:
     """Stores a "statistic" value, e.g. "time taken" along with the maximum
     possible value of the value, which is used to calculate the fraction of 1.
     The fraction is used for choosing colors.
@@ -346,7 +346,7 @@ class Stat(object):
         return Util.human_readable_bibyte(self.value)
 
 
-class StatGroup(object):
+class StatGroup:
     pass
 
 

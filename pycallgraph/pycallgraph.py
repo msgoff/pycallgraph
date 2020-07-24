@@ -6,7 +6,7 @@ from .tracer import AsyncronousTracer, SyncronousTracer
 from .exceptions import PyCallGraphException
 
 
-class PyCallGraph(object):
+class PyCallGraph:
     def __init__(self, output=None, config=None):
         """output can be a single Output instance or an iterable with many
         of them.  Example usage:

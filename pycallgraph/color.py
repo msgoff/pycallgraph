@@ -5,7 +5,7 @@ class ColorException(Exception):
     pass
 
 
-class Color(object):
+class Color:
     def __init__(self, r, g, b, a=1):
         self.r = r
         self.g = g
